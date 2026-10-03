@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AirportFlow | Airport Gate Allocation System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js for analysis graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+    <div class="container nav-container">
+
+        <div class="logo">
+            <span class="logo-icon">✈</span>
+            <div>
+                <h1>AIRPORT<span>FLOW</span></h1>
+                <p>Gate Allocation System</p>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#flights">Flights</a>
+            <a href="#allocation">Allocation</a>
+            <a href="#analysis">Analysis</a>
+            <a href="#algorithm">Algorithm</a>
+        </nav>
+
+    </div>
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+    <div class="container hero-content">
+
+        <div class="hero-text">
+
+            <div class="badge">
+                DAA HACKATHON PROJECT
+            </div>
+
+            <h2>
+                Smart Airport
+                <span>Gate Allocation</span>
+            </h2>
+
+            <p>
+                An intelligent airport gate management system using
+                Greedy Algorithm and Min Heap based Priority Queue
+                to allocate gates efficiently and detect conflicts.
+            </p>
+
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('dashboard')">
+                    Open Dashboard
+                </button>
+
+                <button class="btn btn-secondary" onclick="loadSampleData()">
+                    Load Demo Data
+                </button>
+            </div>
+
+        </div>
+
+        <div class="hero-visual">
+
+            <div class="airport-card">
+
+                <div class="airport-top">
+                    <span>HYD</span>
+                    <span>✈</span>
+                    <span>GATE SYSTEM</span>
+                </div>
+
+                <div class="runway">
+                    <div class="plane">✈</div>
+                </div>
+
+                <div class="gate-mini-grid">
+                    <div>G1</div>
+                    <div>G2</div>
+                    <div>G3</div>
+                    <div>G4</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<main class="container" id="dashboard">
+
+    <section class="section">
+
+        <div class="section-heading">
+            <div>
+                <span class="section-label">CONTROL CENTER</span>
+                <h2>Airport Dashboard</h2>
+            </div>
+
+            <div class="gate-control">
+
+                <label for="gateCount">
+                    Number of Gates
+                </label>
+
+                <input
+                    type="number"
+                    id="gateCount"
+                    min="1"
+                    max="50"
+                    value="4"
+                    onchange="updateGateCount()"
+                >
+
+            </div>
+        </div>
+
+
+        <!-- ================= STATS ================= -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">🚪</div>
+                <div>
+                    <p>Total Gates</p>
+                    <h3 id="totalGates">4</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✈</div>
+                <div>
+                    <p>Total Flights</p>
+                    <h3 id="totalFlights">0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div>
+                    <p>Total Passengers</p>
+                    <h3 id="totalPassengers">0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-icon">✓</div>
+                <div>
+                    <p>Allocated Flights</p>
+                    <h3 id="allocatedFlights">0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card danger">
+                <div class="stat-icon">⚠</div>
+                <div>
+                    <p>Gate Conflicts</p>
+                    <h3 id="gateConflicts">0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div>
+                    <p>Gate Utilization</p>
+                    <h3 id="gateUtilization">0%</h3>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ADD FLIGHT ================= -->
+
+    <section class="section" id="add-flight">
+
+        <div class="section-heading">
+            <div>
+                <span class="section-label">INPUT DATA</span>
+                <h2>Add Flight</h2>
+            </div>
+
+            <button class="btn btn-secondary" onclick="loadSampleData()">
+                Load Example Flights
+            </button>
+        </div>
+
+
+        <div class="form-card">
+
+            <form id="flightForm" onsubmit="addFlight(event)">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label>Flight ID</label>
+                        <input
+                            type="text"
+                            id="flightId"
+                            placeholder="F1"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Airline</label>
+                        <input
+                            type="text"
+                            id="airline"
+                            placeholder="Air India"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Flight Type</label>
+                        <select id="flightType">
+                            <option value="Domestic">Domestic</option>
+                            <option value="International">International</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Origin</label>
+                        <input
+                            type="text"
+                            id="origin"
+                            placeholder="Delhi"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Destination</label>
+                        <input
+                            type="text"
+                            id="destination"
+                            placeholder="Hyderabad"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Arrival Time</label>
+                        <input
+                            type="time"
+                            id="arrival"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Departure Time</label>
+                        <input
+                            type="time"
+                            id="departure"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Passengers</label>
+                        <input
+                            type="number"
+                            id="passengers"
+                            min="1"
+                            placeholder="180"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Total Seats</label>
+                        <input
+                            type="number"
+                            id="seats"
+                            min="1"
+                            placeholder="200"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        + Add Flight
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        onclick="document.getElementById('flightForm').reset()"
+                    >
+                        Clear Form
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FLIGHT TABLE ================= -->
+
+    <section class="section" id="flights">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-label">FLIGHT DATABASE</span>
+                <h2>Flight Information</h2>
+            </div>
+
+            <div class="table-actions">
+
+                <input
+                    type="text"
+                    id="searchFlight"
+                    placeholder="Search flight, airline, route..."
+                    oninput="displayFlights()"
+                >
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="exportCSV()"
+                >
+                    Export CSV
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Flight</th>
+                        <th>Airline</th>
+                        <th>Type</th>
+                        <th>Route</th>
+                        <th>Arrival</th>
+                        <th>Departure</th>
+                        <th>Passengers</th>
+                        <th>Seats</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="flightTableBody">
+                </tbody>
+
+            </table>
+
+            <div id="emptyFlights" class="empty-state">
+                No flights added yet. Add flights or load demo data.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ALLOCATION ================= -->
+
+    <section class="section" id="allocation">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-label">DAA ENGINE</span>
+                <h2>Gate Allocation</h2>
+            </div>
+
+            <div class="allocation-buttons">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="allocateGates()"
+                >
+                    ▶ Run Gate Allocation
+                </button>
+
+                <button
+                    class="btn btn-danger-outline"
+                    onclick="resetResults()"
+                >
+                    Reset Results
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Allocation result -->
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Flight</th>
+                        <th>Airline</th>
+                        <th>Arrival</th>
+                        <th>Departure</th>
+                        <th>Passengers</th>
+                        <th>Gate</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="resultTableBody">
+                </tbody>
+
+            </table>
+
+            <div id="emptyResults" class="empty-state">
+                Run the allocation algorithm to see results.
+            </div>
+
+        </div>
+
+
+        <!-- Conflicts -->
+
+        <div class="conflict-panel" id="conflictPanel">
+
+            <div class="conflict-header">
+                <div>
+                    <span class="section-label">ALERT</span>
+                    <h3>Gate Conflicts</h3>
+                </div>
+
+                <span class="conflict-count" id="conflictCount">
+                    0
+                </span>
+            </div>
+
+            <div id="conflictList">
+                No conflicts detected.
+            </div>
+
+        </div>
+
+
+        <!-- Timeline -->
+
+        <div class="timeline-card">
+
+            <div class="section-heading small">
+
+                <div>
+                    <span class="section-label">VISUALIZATION</span>
+                    <h3>Gate Timeline</h3>
+                </div>
+
+            </div>
+
+            <div
+                id="gateTimeline"
+                class="gate-timeline"
+            >
+                Run allocation to generate the timeline.
+            </div>
+
+        </div>
+
+
+        <!-- Algorithm Trace -->
+
+        <div class="trace-card">
+
+            <div class="section-heading small">
+
+                <div>
+                    <span class="section-label">EXECUTION</span>
+                    <h3>Algorithm Trace</h3>
+                </div>
+
+            </div>
+
+            <div id="algorithmTrace" class="algorithm-trace">
+                Run the algorithm to see each step.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ANALYSIS ================= -->
+
+    <section class="section" id="analysis">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-label">DATA ANALYTICS</span>
+                <h2>System Analysis</h2>
+            </div>
+
+        </div>
+
+
+        <!-- Analysis Cards -->
+
+        <div class="analysis-grid">
+
+            <div class="analysis-card">
+                <span>Peak Concurrent Flights</span>
+                <strong id="peakFlights">0</strong>
+                <small>Maximum flights active at the same time</small>
+            </div>
+
+            <div class="analysis-card">
+                <span>Gate Utilization</span>
+                <strong id="analysisUtilization">0%</strong>
+                <small>Based on allocated gate time</small>
+            </div>
+
+            <div class="analysis-card">
+                <span>Allocation Rate</span>
+                <strong id="allocationRate">0%</strong>
+                <small>Flights successfully allocated</small>
+            </div>
+
+            <div class="analysis-card">
+                <span>Conflict Rate</span>
+                <strong id="conflictRate">0%</strong>
+                <small>Flights without available gates</small>
+            </div>
+
+            <div class="analysis-card">
+                <span>Total Gate Time</span>
+                <strong id="totalGateTime">0 min</strong>
+                <small>Total allocated gate occupancy</small>
+            </div>
+
+            <div class="analysis-card">
+                <span>Busiest Gate</span>
+                <strong id="busiestGate">-</strong>
+                <small>Gate with maximum assigned flights</small>
+            </div>
+
+        </div>
+
+
+        <!-- Graphs -->
+
+        <div class="graphs-grid">
+
+            <div class="graph-card">
+                <div class="graph-header">
+                    <h3>Flights Per Gate</h3>
+                    <span>Allocation distribution</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="gateFlightsChart"></canvas>
+                </div>
+            </div>
+
+
+            <div class="graph-card">
+                <div class="graph-header">
+                    <h3>Passenger Distribution</h3>
+                    <span>Passengers per flight</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="passengerChart"></canvas>
+                </div>
+            </div>
+
+
+            <div class="graph-card">
+                <div class="graph-header">
+                    <h3>Gate Utilization</h3>
+                    <span>Occupied time by gate</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="gateUtilizationChart"></canvas>
+                </div>
+            </div>
+
+
+            <div class="graph-card">
+                <div class="graph-header">
+                    <h3>Flight Status</h3>
+                    <span>Allocated vs conflicts</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+
+            <div class="graph-card wide-chart">
+                <div class="graph-header">
+                    <h3>Active Flights Over Time</h3>
+                    <span>Peak overlap visualization</span>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="activeFlightsChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ALGORITHM ================= -->
+
+    <section class="section" id="algorithm">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-label">DESIGN & ANALYSIS OF ALGORITHMS</span>
+                <h2>How the Algorithm Works</h2>
+            </div>
+
+        </div>
+
+
+        <!-- Algorithm Introduction -->
+
+        <div class="algorithm-intro">
+
+            <div class="algorithm-icon">
+                ⚙
+            </div>
+
+            <div>
+
+                <h3>
+                    Greedy Interval Partitioning + Min Heap
+                </h3>
+
+                <p>
+                    Each flight is treated as a time interval
+                    <strong>[arrival, departure]</strong>.
+                    Airport gates are limited resources.
+                    The algorithm assigns the earliest available gate
+                    to each flight while processing flights in
+                    chronological order.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Algorithm Steps -->
+
+        <h3 class="subsection-title">
+            Algorithm Steps
+        </h3>
+
+        <div class="algorithm-flow">
+
+            <div class="algorithm-step">
+
+                <div class="step-number">01</div>
+
+                <div>
+                    <h3>Enter Flights</h3>
+
+                    <p>
+                        Store flight ID, airline, arrival,
+                        departure, passenger count and route.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="flow-arrow">→</div>
+
+
+            <div class="algorithm-step">
+
+                <div class="step-number">02</div>
+
+                <div>
+                    <h3>Sort by Arrival</h3>
+
+                    <p>
+                        Sort all flights in increasing order
+                        of arrival time.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="flow-arrow">→</div>
+
+
+            <div class="algorithm-step">
+
+                <div class="step-number">03</div>
+
+                <div>
+                    <h3>Check Gates</h3>
+
+                    <p>
+                        Look at gates currently occupied
+                        by previous flights.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="flow-arrow">→</div>
+
+
+            <div class="algorithm-step">
+
+                <div class="step-number">04</div>
+
+                <div>
+                    <h3>Release Gates</h3>
+
+                    <p>
+                        Release every gate whose previous
+                        flight has already departed.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="flow-arrow">→</div>
+
+
+            <div class="algorithm-step">
+
+                <div class="step-number">05</div>
+
+                <div>
+                    <h3>Assign Gate</h3>
+
+                    <p>
+                        Select the smallest available gate
+                        using the Min Heap.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="flow-arrow">→</div>
+
+
+            <div class="algorithm-step">
+
+                <div class="step-number">06</div>
+
+                <div>
+                    <h3>Detect Conflict</h3>
+
+                    <p>
+                        If no gate is available,
+                        mark the flight as a conflict.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Heap Explanation -->
+
+        <h3 class="subsection-title">
+            Priority Queue / Min Heap Structure
+        </h3>
+
+        <div class="heap-grid">
+
+            <div class="heap-card available-heap">
+
+                <div class="heap-title">
+                    <span class="heap-icon">✓</span>
+
+                    <div>
+                        <h3>Available Gates Min Heap</h3>
+                        <p>Stores currently free gates</p>
+                    </div>
+                </div>
+
+                <div class="heap-values">
+                    <span>G1</span>
+                    <span>G2</span>
+                    <span>G3</span>
+                    <span>G4</span>
+                </div>
+
+                <p>
+                    The smallest gate number is selected
+                    whenever a new flight needs a gate.
+                </p>
+
+            </div>
+
+
+            <div class="heap-card busy-heap">
+
+                <div class="heap-title">
+                    <span class="heap-icon">◷</span>
+
+                    <div>
+                        <h3>Busy Gates Min Heap</h3>
+                        <p>Stores occupied gates by departure time</p>
+                    </div>
+                </div>
+
+                <div class="busy-example">
+                    <div>
+                        <strong>09:30</strong>
+                        <span>G1</span>
+                    </div>
+
+                    <div>
+                        <strong>10:00</strong>
+                        <span>G2</span>
+                    </div>
+
+                    <div>
+                        <strong>11:00</strong>
+                        <span>G3</span>
+                    </div>
+                </div>
+
+                <p>
+                    The earliest departing flight is always
+                    available at the top of the heap.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Real Example -->
+
+        <h3 class="subsection-title">
+            Real-Time Example
+        </h3>
+
+        <div class="example-card">
+
+            <div class="example-header">
+                <div>
+                    <span class="section-label">EXAMPLE</span>
+                    <h3>Gate Allocation Process</h3>
+                </div>
+
+                <span class="gate-badge">
+                    3 Gates
+                </span>
+            </div>
+
+
+            <div class="example-table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Flight</th>
+                            <th>Arrival</th>
+                            <th>Departure</th>
+                            <th>Decision</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>F1</td>
+                            <td>08:00</td>
+                            <td>09:30</td>
+                            <td>
+                                <span class="status allocated">
+                                    G1
+                                </span>
+                            </td>
+                            <td>First available gate</td>
+                        </tr>
+
+                        <tr>
+                            <td>F2</td>
+                            <td>08:20</td>
+                            <td>10:00</td>
+                            <td>
+                                <span class="status allocated">
+                                    G2
+                                </span>
+                            </td>
+                            <td>G1 is busy</td>
+                        </tr>
+
+                        <tr>
+                            <td>F3</td>
+                            <td>08:40</td>
+                            <td>09:45</td>
+                            <td>
+                                <span class="status allocated">
+                                    G3
+                                </span>
+                            </td>
+                            <td>G1 and G2 are busy</td>
+                        </tr>
+
+                        <tr>
+                            <td>F4</td>
+                            <td>09:30</td>
+                            <td>11:00</td>
+                            <td>
+                                <span class="status allocated">
+                                    G1
+                                </span>
+                            </td>
+                            <td>F1 departed at 09:30</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- Core Rule -->
+
+        <div class="core-rule">
+
+            <div class="rule-icon">
+                ⏱
+            </div>
+
+            <div>
+
+                <span>CORE ALLOCATION RULE</span>
+
+                <h3>
+                    Previous Departure ≤ Current Arrival
+                </h3>
+
+                <p>
+                    If a previous flight has departed before
+                    or exactly when the next flight arrives,
+                    its gate can be reused.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Pseudocode -->
+
+        <h3 class="subsection-title">
+            Pseudocode
+        </h3>
+
+        <div class="code-card">
+
+<pre><code>SORT flights by arrival time
+
+CREATE AvailableGates Min Heap
+CREATE BusyGates Min Heap
+
+FOR each flight:
+
+    WHILE BusyGates is not empty
+          AND earliest departure <= flight arrival:
+
+        release gate
+        move gate to AvailableGates
+
+    IF AvailableGates is not empty:
+
+        gate = smallest available gate
+
+        assign gate to flight
+
+        insert
+        (flight departure, gate)
+        into BusyGates
+
+    ELSE:
+
+        mark flight as CONFLICT
+
+END FOR</code></pre>
+
+        </div>
+
+
+        <!-- Complexity -->
+
+        <h3 class="subsection-title">
+            Complexity Analysis
+        </h3>
+
+        <div class="complexity-grid">
+
+            <div class="complexity-card">
+                <span>TIME COMPLEXITY</span>
+                <strong>O(n log n)</strong>
+                <p>
+                    Sorting takes O(n log n), and
+                    heap operations take O(log k).
+                </p>
+            </div>
+
+            <div class="complexity-card">
+                <span>SPACE COMPLEXITY</span>
+                <strong>O(n + k)</strong>
+                <p>
+                    Stores flight information and
+                    gate priority queues.
+                </p>
+            </div>
+
+            <div class="complexity-card">
+                <span>STRATEGY</span>
+                <strong>GREEDY</strong>
+                <p>
+                    Assign the earliest available
+                    gate to every flight.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <div class="container footer-content">
+
+        <div>
+            <strong>AIRPORTFLOW</strong>
+            <p>
+                Airport Gate Allocation System
+            </p>
+        </div>
+
+        <div>
+            <p>
+                DAA Hackathon Project
+            </p>
+
+            <p>
+                Greedy Algorithm • Min Heap • Priority Queue
+            </p>
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
